@@ -15,3 +15,9 @@ global C; global V;
 %% e: total error
 %% s: segmentation, K-1 integers
 %% m: K means of the segments
+
+
+%% problem statement:
+Given A and K,
+
+find [A_1, A_2,... A_K] s.t. non-overlap, and min\sum_k(\sum_i A_i - \mu_k) 
