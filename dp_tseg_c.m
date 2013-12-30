@@ -12,7 +12,7 @@ function [e,S,m] = dp_tseg_c(T,k)
 % m : the k means;
 % with cache
 % Author: Chenyang Zhang;
-% Data: Dec 18, 2013;
+% Date: Dec 18, 2013;
 global C
 global V;
 
