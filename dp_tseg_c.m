@@ -1,4 +1,4 @@
-function [e,S,m] = dp_tseg_c(T,k)
+function [e,S,m] = dp_tseg_c(T,k,offset)
 % implementation of dynamic programming of time series segmentation algorithm in :
 %   R. Bellman. On the approximation of curves by line segments
 %   using dynamic programming. Communications of the ACM,
@@ -12,11 +12,18 @@ function [e,S,m] = dp_tseg_c(T,k)
 % m : the k means;
 % with cache
 % Author: Chenyang Zhang;
-% Date: Dec 18, 2013;
+% Data: Dec 18, 2013;
+% Modified on 2/28/2014;
+% Bug Fixed
 global C
 global V;
 
 S = [];
+if k>size(T,2)
+    e = Inf;
+    m = zeros(size(T,1),1);
+    return;
+end
 if(k==1)
     m = mean(T,2);
     e = 0;
@@ -28,23 +35,28 @@ end
 m = [];
 min_err = inf;
 for j = 1:size(T,2)-1
-    if(V(j,k))==1
-        e1 = C(j,k,1).e;
-        e2 = C(j,k,2).e;
-        S1 = C(j,k,1).S;
-        S2 = C(j,k,2).S;
-        m1 = C(j,k,1).m;
-        m2 = C(j,k,2).m;       
+    if(V(offset+1,offset+j,k-1)==1)
+        e1 = C(offset+1,offset+j,k).e1;
+        S1 = C(offset+1,offset+j,k).S1;
+        m1 = C(offset+1,offset+j,k).m1;
     else
-        [e1,S1,m1] = dp_tseg_c(T(:,1:j),k-1);
-        [e2,S2,m2] = dp_tseg_c(T(:,j+1:end),1);
-        V(j,k)=1;
-        C(j,k,1).e = e1;
-        C(j,k,2).e = e2;
-        C(j,k,1).S = S1;
-        C(j,k,2).S = S2;
-        C(j,k,1).m = m1;
-        C(j,k,2).m = m2;  
+        [e1,S1,m1] = dp_tseg_c(T(:,1:j),k-1,offset);
+        C(offset+1,offset+j,k).e1 = e1;
+        C(offset+1,offset+j,k).S1 = S1;
+        C(offset+1,offset+j,k).m1 = m1;
+        V(offset+1,offset+j,k)=1;
+    end
+    
+    if(V(offset+j+1,offset+size(T,2),1)==1)
+        e2 = C(offset+j+1,offset+size(T,2),1).e2;
+        S2 = C(offset+j+1,offset+size(T,2),1).S2;
+        m2 = C(offset+j+1,offset+size(T,2),1).m2;
+    else
+        [e2,S2,m2] = dp_tseg_c(T(:,j+1:end),1,j+offset);
+        C(offset+j+1,offset+size(T,2),1).e2 = e2;
+        C(offset+j+1,offset+size(T,2),1).S2 = S2;
+        C(offset+j+1,offset+size(T,2),1).m2 = m2;
+        V(offset+j+1,offset+size(T,2),1)=1;
     end
     
     if e1+e2<min_err
