@@ -21,3 +21,10 @@ global C; global V;
 Given A and K,
 
 find [A_1, A_2,... A_K] s.t. non-overlap, and min\sum_k(\sum_i A_i - \mu_k) 
+
+
+Update: 3/5/2014
+
+Add mex interface for matlab and c++ file. around 10~15 times faster than matlab script.
+
+syntax: [s,e]=dp_tseg(seq,K);
